@@ -26,6 +26,7 @@ function listening(){
 app.get('/all', (req, res) => {
     res.send(JSON.stringify(projectData))
   })
+  
   // Post route
   app.post('/', (req, res) => {
     projectData.temperature = req.body.temperature

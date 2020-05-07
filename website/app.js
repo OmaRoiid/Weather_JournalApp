@@ -2,7 +2,7 @@
 /* Global Variables */
 let CurrentDate = new Date();
 let newDate = CurrentDate.getMonth() + '.' + CurrentDate.getDate() + '.' + CurrentDate.getFullYear();
-const apiKey  ='413408b2edf0763abe968dabe3313427';
+const apiKey  ='413408b2edf0763abe968dabe3313427&units=imperial';
 const baseURL ='api.openweathermap.org/data/2.5/weather?';
 //Create DOM vars
 const zipInput = document.getElementById('zip');
@@ -15,7 +15,7 @@ const postURL = 'http://localhost:3030'
 const getURL = 'http://localhost:3030/all'
 
 // Call function to fetch via OpenWeatherMap
-const getWeatherDataFromAPI = async (baseURL, zip = '94712,us', api) => {
+const getWeatherDataFromAPI = async (baseURL,zip, api) => {
   const url = `http://${baseURL}zip=${zip}&appid=${api}`
   const response = await fetch(url)
   try{
@@ -27,7 +27,7 @@ catch{
 }
 }
 
-// User-input post data function
+//  Post data function into Server.js
 const postData = async (path, data = {}) => {
   const response = await fetch(path, {
     method: 'POST', 
@@ -42,6 +42,7 @@ const postData = async (path, data = {}) => {
 
 // Update UI function 
 const updateUI = async () => {
+  //Get data function from Server.js
   const response = await fetch(getURL)
   const jsonResponse = await response.json()
   dateHolder.innerHTML = `Date: ${jsonResponse.date}`
@@ -49,8 +50,8 @@ const updateUI = async () => {
   contentHolder.innerHTML = `You feel: ${jsonResponse.userResponse}`
 }
 
-// Event handler handleClick
-const handleClick = async () => {
+// Event handler 
+const generateBtnClicked = async () => {
   const weatherData = await getWeatherDataFromAPI(baseURL, zipInput.value, apiKey)
   const data = {
     temperature: weatherData.main.temp,
@@ -63,4 +64,4 @@ const handleClick = async () => {
 
 // Add element event listener with 'generate' id
 const generateBtn = document.getElementById('generate')
-generateBtn.addEventListener('click', handleClick)
+generateBtn.addEventListener('click', generateBtnClicked)
