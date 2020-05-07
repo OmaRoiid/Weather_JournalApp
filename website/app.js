@@ -1,0 +1,66 @@
+
+/* Global Variables */
+let CurrentDate = new Date();
+let newDate = CurrentDate.getMonth() + '.' + CurrentDate.getDate() + '.' + CurrentDate.getFullYear();
+const apiKey  ='413408b2edf0763abe968dabe3313427';
+const baseURL ='api.openweathermap.org/data/2.5/weather?';
+//Create DOM vars
+const zipInput = document.getElementById('zip');
+const userInput = document.getElementById('feelings')
+const dateHolder = document.getElementById('date')
+const tempHolder = document.getElementById('temp')
+const contentHolder = document.getElementById('content')
+//Server.js Vars
+const postURL = 'http://localhost:3030'
+const getURL = 'http://localhost:3030/all'
+
+// Call function to fetch via OpenWeatherMap
+const getWeatherDataFromAPI = async (baseURL, zip = '94712,us', api) => {
+  const url = `http://${baseURL}zip=${zip}&appid=${api}`
+  const response = await fetch(url)
+  try{
+  let jsonResponse = await response.json()
+  return jsonResponse
+}
+catch{
+  console.log('error in fetching')
+}
+}
+
+// User-input post data function
+const postData = async (path, data = {}) => {
+  const response = await fetch(path, {
+    method: 'POST', 
+    credentials: 'same-origin', 
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    redirect: 'follow',
+    body: JSON.stringify(data), 
+  })
+}
+
+// Update UI function 
+const updateUI = async () => {
+  const response = await fetch(getURL)
+  const jsonResponse = await response.json()
+  dateHolder.innerHTML = `Date: ${jsonResponse.date}`
+  tempHolder.innerHTML = `Temperature: ${jsonResponse.temperature}`
+  contentHolder.innerHTML = `You feel: ${jsonResponse.userResponse}`
+}
+
+// Event handler handleClick
+const handleClick = async () => {
+  const weatherData = await getWeatherDataFromAPI(baseURL, zipInput.value, apiKey)
+  const data = {
+    temperature: weatherData.main.temp,
+    date: newDate,
+    userresponse: userInput.value
+  }
+  await postData(postURL, data)
+  updateUI()
+}
+
+// Add element event listener with 'generate' id
+const generateBtn = document.getElementById('generate')
+generateBtn.addEventListener('click', handleClick)
